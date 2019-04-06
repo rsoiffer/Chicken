@@ -6,8 +6,8 @@ import java.util.Map;
 public class VariableName {
 
     private static final String[][] nameArray = {
-        {"x", "y", "z", "w", "v", "u", "t", "s", "r", "q"},
         {"𝜑", "𝜓", "𝜒"},
+        {"x", "y", "z", "w", "v", "u", "t", "s", "r", "q"},
         {"A", "B", "C", "D", "E", "F"}
     };
 
@@ -36,7 +36,8 @@ public class VariableName {
         return r;
     }
 
-    public String name() {
+    @Override
+    public String toString() {
         if (!currentNames.containsKey(this)) {
             currentNames.put(this, intToName(nameCount[namingScheme]));
             nameCount[namingScheme]++;
