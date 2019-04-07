@@ -2,14 +2,15 @@ package logic;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import logic.Expression.ExpressionCategory;
 import logic.Expression.ExpressionType;
 import static logic.Expression.ExpressionType.PREDICATE;
 import static logic.Expression.ExpressionType.SET;
 
-public class Operator {
+public class Operator implements ExpressionCategory {
 
-    private final ExpressionType[] inputTypes;
-    private final ExpressionType outputType;
+    public final ExpressionType[] inputTypes;
+    public final ExpressionType outputType;
     private final Function<Expression[], String> printer;
 
     private Operator(Function<Expression[], String> printer, ExpressionType outputType, ExpressionType... inputTypes) {
@@ -51,11 +52,11 @@ public class Operator {
                 throw new RuntimeException("Argument " + i + " has incorrect type");
             }
         }
-        return new Expression(outputType, this, args, null) {
-            @Override
-            public String print() {
-                return printer.apply(args);
-            }
-        };
+        return new Expression(outputType, this, args, null);
+    }
+
+    @Override
+    public String printExpression(Expression e) {
+        return printer.apply(e.parts);
     }
 }

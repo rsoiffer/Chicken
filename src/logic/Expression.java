@@ -2,46 +2,41 @@ package logic;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import variables.Variable;
-import variables.VariableAssignment;
 
-public abstract class Expression {
+public final class Expression {
+
+    public static interface ExpressionCategory {
+
+        public String printExpression(Expression e);
+    }
 
     public static enum ExpressionType {
         PREDICATE, SET
     }
 
     public final ExpressionType type;
-    private final Object parent;
-    private final Expression[] parts;
+    public final ExpressionCategory category;
+    final Expression[] parts;
     private final Expression[] reqDistinct;
 
-    public Expression(ExpressionType type, Object parent, Expression[] parts, Expression[] reqDistinct) {
+    public Expression(ExpressionType type, ExpressionCategory category, Expression[] parts, Expression[] reqDistinct) {
         this.type = type;
-        this.parent = parent;
+        this.category = category;
         this.parts = parts;
         this.reqDistinct = reqDistinct;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
         final Expression other = (Expression) obj;
         if (this.type != other.type) {
             return false;
         }
-        if (!Objects.equals(this.parent, other.parent)) {
+        if (!Objects.equals(this.category, other.category)) {
             return false;
         }
         if (!Arrays.deepEquals(this.parts, other.parts)) {
@@ -57,55 +52,37 @@ public abstract class Expression {
     public int hashCode() {
         int hash = 3;
         hash = 43 * hash + Objects.hashCode(this.type);
-        hash = 43 * hash + Objects.hashCode(this.parent);
+        hash = 43 * hash + Objects.hashCode(this.category);
         hash = 43 * hash + Arrays.deepHashCode(this.parts);
         hash = 43 * hash + Arrays.deepHashCode(this.reqDistinct);
         return hash;
     }
 
-    public Object parent() {
-        return parent;
-    }
-
     public List<Expression> parts() {
-        return Arrays.asList(parts);
+        return parts == null ? Arrays.asList() : Arrays.asList(parts);
     }
 
     public List<Expression> partsRecursive() {
         return Stream.concat(Stream.of(this), parts().stream().flatMap(e -> e.partsRecursive().stream())).collect(Collectors.toList());
     }
 
-    public abstract String print();
-
     public Expression reqDistinct(Expression... reqDistinct) {
-        Expression self = this;
-        return new Expression(type, parent, parts, reqDistinct) {
-            @Override
-            public String print() {
-                return self.print() + "_";
-            }
-        };
+        return new Expression(type, category, parts, reqDistinct);
     }
 
-    public Expression substitute(VariableAssignment va) {
-        if (this instanceof Variable) {
-            return va.assignment.get((Variable) this);
+    public Expression substitute(Map<Expression, Expression> remap) {
+        if (remap.containsKey(this)) {
+            return remap.get(this);
         }
         Expression[] newParts = new Expression[parts.length];
         for (int i = 0; i < parts.length; i++) {
-            newParts[i] = parts[i].substitute(va);
+            newParts[i] = parts[i].substitute(remap);
         }
-        Expression self = this;
-        return new Expression(type, parent, newParts, reqDistinct) {
-            @Override
-            public String print() {
-                return self.print() + "_";
-            }
-        };
+        return new Expression(type, category, newParts, reqDistinct);
     }
 
     @Override
     public String toString() {
-        return print();
+        return category.printExpression(this);
     }
 }

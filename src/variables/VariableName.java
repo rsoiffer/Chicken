@@ -6,7 +6,7 @@ import java.util.Map;
 public class VariableName {
 
     private static final String[][] nameArray = {
-        {"𝜑", "𝜓", "𝜒"},
+        {"φ", "ψ", "χ"},
         {"x", "y", "z", "w", "v", "u", "t", "s", "r", "q"},
         {"A", "B", "C", "D", "E", "F"}
     };
