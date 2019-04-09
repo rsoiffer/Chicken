@@ -1,11 +1,11 @@
-package logic;
+package settheory.logic;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import logic.Expression.ExpressionCategory;
-import logic.Expression.ExpressionType;
-import static logic.Expression.ExpressionType.PREDICATE;
-import static logic.Expression.ExpressionType.SET;
+import settheory.logic.Expression.ExpressionCategory;
+import settheory.logic.Expression.ExpressionType;
+import static settheory.logic.Expression.ExpressionType.PREDICATE;
+import static settheory.logic.Expression.ExpressionType.SET;
 
 public class Operator implements ExpressionCategory {
 

@@ -1,4 +1,4 @@
-package variables;
+package settheory.variables;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,10 +1,11 @@
-package variables;
+package settheory.variables;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import logic.Expression;
-import static logic.Utils.randomOfType;
+import java.util.stream.Collectors;
+import settheory.logic.Expression;
+import static settheory.logic.Utils.randomOfType;
 
 public class VariableAssignment {
 
@@ -20,7 +21,7 @@ public class VariableAssignment {
     }
 
     public void fillRandomly(List<Expression> newVars) {
-        for (Expression e : exp.partsRecursive()) {
+        for (Expression e : exp.variables().collect(Collectors.toList())) {
             if (e.category instanceof Variable) {
                 assignment.put(e, randomOfType(e.type, newVars));
             }

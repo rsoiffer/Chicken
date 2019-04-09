@@ -1,13 +1,14 @@
-package logic;
+package settheory.logic;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-import static logic.Expression.ExpressionType.PREDICATE;
-import static logic.Expression.ExpressionType.SET;
-import static logic.Operator.*;
-import static variables.Variable.vars;
-import variables.VariableName;
+import static settheory.logic.Expression.ExpressionType.PREDICATE;
+import static settheory.logic.Expression.ExpressionType.SET;
+import static settheory.logic.Operator.*;
+import settheory.proofs.Proof;
+import static settheory.variables.Variable.vars;
+import settheory.variables.VariableName;
 
 public class Main {
 
@@ -36,51 +37,53 @@ public class Main {
             return implies.of(implies.of(not.of(v[0]), not.of(v[1])), implies.of(v[1], v[0]));
         });
 
-        // Predicate Calculus
-        equal = opSS2B((s1, s2) -> s1 + "=" + s2);
-        elementOf = opSS2B((s1, s2) -> s1 + "∈" + s2);
-        forall = opSB2B((v, p) -> "∀" + v + ":" + p);
+        if (false) {
+            // Predicate Calculus
+            equal = opSS2B((s1, s2) -> s1 + "=" + s2);
+            elementOf = opSS2B((s1, s2) -> s1 + "∈" + s2);
+            forall = opSB2B((v, p) -> "∀" + v + ":" + p);
 
-        addAxiom("Quantified Implication", () -> {
-            Expression[] v = vars(SET, PREDICATE, PREDICATE);
-            return implies.of(forall.of(v[0], implies.of(v[1], v[2])), implies.of(forall.of(v[0], v[1]), forall.of(v[0], v[2])));
-        });
-        addAxiom("Distinctness", () -> {
-            Expression[] v = vars(SET, PREDICATE);
-            return implies.of(v[1], forall.of(v[0], v[1])).reqDistinct(v);
-        });
-        addAxiom("Existence", () -> {
-            Expression[] v = vars(SET, SET);
-            return not.of(forall.of(v[0], not.of(equal.of(v[0], v[1]))));
-        });
-        addAxiom("Equality", () -> {
-            Expression[] v = vars(SET, SET, SET);
-            return implies.of(equal.of(v[0], v[1]), implies.of(equal.of(v[0], v[2]), equal.of(v[1], v[2])));
-        });
-        addAxiom("Left Equality for Binary Predicate", () -> {
-            Expression[] v = vars(SET, SET, SET);
-            return implies.of(equal.of(v[0], v[1]), implies.of(elementOf.of(v[0], v[2]), elementOf.of(v[1], v[2])));
-        });
-        addAxiom("Right Equality for Binary Predicate", () -> {
-            Expression[] v = vars(SET, SET, SET);
-            return implies.of(equal.of(v[0], v[1]), implies.of(elementOf.of(v[2], v[0]), elementOf.of(v[2], v[1])));
-        });
-        addAxiom("Quantified Negation", () -> {
-            Expression[] v = vars(SET, PREDICATE);
-            return implies.of(not.of(forall.of(v[0], v[1])), forall.of(v[0], not.of(forall.of(v[0], v[1]))));
-        });
-        addAxiom("Quantified Commutation", () -> {
-            Expression[] v = vars(SET, SET, PREDICATE);
-            return implies.of(forall.of(v[0], forall.of(v[1], v[2])), forall.of(v[1], forall.of(v[0], v[2])));
-        });
-        addAxiom("Substitution", () -> {
-            Expression[] v = vars(SET, SET, PREDICATE);
-            return implies.of(equal.of(v[0], v[1]), implies.of(forall.of(v[1], v[2]), forall.of(v[0], implies.of(equal.of(v[0], v[1]), v[2]))));
-        });
-        addAxiom("Quantified Equality", () -> {
-            Expression[] v = vars(SET, SET, SET);
-            return implies.of(not.of(equal.of(v[0], v[1])), implies.of(equal.of(v[1], v[2]), forall.of(v[0], equal.of(v[1], v[2]))));
-        });
+            addAxiom("Quantified Implication", () -> {
+                Expression[] v = vars(SET, PREDICATE, PREDICATE);
+                return implies.of(forall.of(v[0], implies.of(v[1], v[2])), implies.of(forall.of(v[0], v[1]), forall.of(v[0], v[2])));
+            });
+            addAxiom("Distinctness", () -> {
+                Expression[] v = vars(SET, PREDICATE);
+                return implies.of(v[1], forall.of(v[0], v[1])).reqDistinct(v);
+            });
+            addAxiom("Existence", () -> {
+                Expression[] v = vars(SET, SET);
+                return not.of(forall.of(v[0], not.of(equal.of(v[0], v[1]))));
+            });
+            addAxiom("Equality", () -> {
+                Expression[] v = vars(SET, SET, SET);
+                return implies.of(equal.of(v[0], v[1]), implies.of(equal.of(v[0], v[2]), equal.of(v[1], v[2])));
+            });
+            addAxiom("Left Equality for Binary Predicate", () -> {
+                Expression[] v = vars(SET, SET, SET);
+                return implies.of(equal.of(v[0], v[1]), implies.of(elementOf.of(v[0], v[2]), elementOf.of(v[1], v[2])));
+            });
+            addAxiom("Right Equality for Binary Predicate", () -> {
+                Expression[] v = vars(SET, SET, SET);
+                return implies.of(equal.of(v[0], v[1]), implies.of(elementOf.of(v[2], v[0]), elementOf.of(v[2], v[1])));
+            });
+            addAxiom("Quantified Negation", () -> {
+                Expression[] v = vars(SET, PREDICATE);
+                return implies.of(not.of(forall.of(v[0], v[1])), forall.of(v[0], not.of(forall.of(v[0], v[1]))));
+            });
+            addAxiom("Quantified Commutation", () -> {
+                Expression[] v = vars(SET, SET, PREDICATE);
+                return implies.of(forall.of(v[0], forall.of(v[1], v[2])), forall.of(v[1], forall.of(v[0], v[2])));
+            });
+            addAxiom("Substitution", () -> {
+                Expression[] v = vars(SET, SET, PREDICATE);
+                return implies.of(equal.of(v[0], v[1]), implies.of(forall.of(v[1], v[2]), forall.of(v[0], implies.of(equal.of(v[0], v[1]), v[2]))));
+            });
+            addAxiom("Quantified Equality", () -> {
+                Expression[] v = vars(SET, SET, SET);
+                return implies.of(not.of(equal.of(v[0], v[1])), implies.of(equal.of(v[1], v[2]), forall.of(v[0], equal.of(v[1], v[2]))));
+            });
+        }
 
         // Set Theory
         // [Insert things here]
@@ -112,7 +115,9 @@ public class Main {
                 Expression[] v = vars(PREDICATE, PREDICATE);
                 return equiv.of(and.of(v[0], v[1]), not.of(or.of(not.of(v[0]), not.of(v[1]))));
             });
+        }
 
+        if (false) {
             exists = opSB2B((v, p) -> "∃" + v + ":" + p);
             addAxiom("Definition of ∃", () -> {
                 Expression[] v = vars(SET, PREDICATE);
@@ -142,21 +147,24 @@ public class Main {
         }
 
         Proof proof = new Proof();
-        Expression[] v = vars(PREDICATE);
+        Expression[] v = vars(PREDICATE, PREDICATE, PREDICATE);
 
-//        Expression identity = implies.of(v[0], v[0]);
-//        Expression idNot = implies.of(not.of(v[0]), not.of(v[0]));
-        Expression excludedMiddle = or.of(v[0], not.of(v[0]));
-//        Expression notnot1 = implies.of(v[0], not.of(not.of(v[0])));
-//        proof.addKnown(identity);
-//        proof.addKnown(idNot);
+        Expression identity = implies.of(v[0], v[0]);
+        Expression idNot = implies.of(not.of(v[0]), not.of(v[0]));
+        Expression peirce = implies.of(implies.of(implies.of(v[0], v[1]), v[0]), v[0]);
 
-        proof.prove(excludedMiddle);
+        Expression notnot1 = implies.of(v[0], not.of(not.of(v[0])));
+        Expression con2i = implies.of(implies.of(v[0], not.of(v[1])), implies.of(v[1], not.of(v[0])));
+        Expression nsyl3a = implies.of(implies.of(v[0], not.of(v[1])), implies.of(implies.of(v[1], v[1]), implies.of(v[1], not.of(v[0]))));
+        Expression nsyl3 = implies.of(implies.of(v[0], not.of(v[1])), implies.of(implies.of(v[2], v[1]), implies.of(v[2], not.of(v[0]))));
+        Expression mt2d = implies.of(implies.of(v[0], v[2]), implies.of(implies.of(v[0], implies.of(v[1], not.of(v[2]))), implies.of(v[0], not.of(v[1]))));
+
+        proof.addKnown(v[0]);
+        Expression goal = not.of(not.of(v[0]));
+
         VariableName.clearNames();
+        proof.prove(goal);
         System.out.println(proof);
-
-        //System.out.println();
-        //System.out.println(proof.work());
     }
 
     public static void addAxiom(String name, Supplier<Expression> s) {

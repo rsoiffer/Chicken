@@ -1,11 +1,12 @@
-package logic;
+package settheory.logic;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static settheory.logic.Main.not;
+import settheory.variables.Variable;
 
 public final class Expression {
 
@@ -28,6 +29,16 @@ public final class Expression {
         this.category = category;
         this.parts = parts;
         this.reqDistinct = reqDistinct;
+    }
+
+    public double complexity() {
+        if (parts == null) {
+            return 1;
+        }
+        if (category == not) {
+            return .5 + Stream.of(parts).mapToDouble(Expression::complexity).sum();
+        }
+        return .1 + Stream.of(parts).mapToDouble(Expression::complexity).sum();
     }
 
     @Override
@@ -62,17 +73,22 @@ public final class Expression {
         return parts == null ? Arrays.asList() : Arrays.asList(parts);
     }
 
-    public List<Expression> partsRecursive() {
-        return Stream.concat(Stream.of(this), parts().stream().flatMap(e -> e.partsRecursive().stream())).collect(Collectors.toList());
-    }
-
+//    public List<Expression> partsRecursive() {
+//        return Stream.concat(Stream.of(this), parts().stream().flatMap(e -> e.partsRecursive().stream())).collect(Collectors.toList());
+//    }
     public Expression reqDistinct(Expression... reqDistinct) {
         return new Expression(type, category, parts, reqDistinct);
     }
 
     public Expression substitute(Map<Expression, Expression> remap) {
         if (remap.containsKey(this)) {
+            if (type != remap.get(this).type) {
+                throw new RuntimeException("Remap has incorrect type");
+            }
             return remap.get(this);
+        }
+        if (parts == null || parts.length == 0) {
+            return this;
         }
         Expression[] newParts = new Expression[parts.length];
         for (int i = 0; i < parts.length; i++) {
@@ -84,5 +100,15 @@ public final class Expression {
     @Override
     public String toString() {
         return category.printExpression(this);
+    }
+
+    public Stream<Expression> variables() {
+        if (category instanceof Variable) {
+            return Stream.of(this);
+        }
+        if (parts == null) {
+            return Stream.of();
+        }
+        return Stream.of(parts).flatMap(Expression::variables);
     }
 }

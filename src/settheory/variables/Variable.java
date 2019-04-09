@@ -1,8 +1,8 @@
-package variables;
+package settheory.variables;
 
-import logic.Expression;
-import logic.Expression.ExpressionCategory;
-import logic.Expression.ExpressionType;
+import settheory.logic.Expression;
+import settheory.logic.Expression.ExpressionCategory;
+import settheory.logic.Expression.ExpressionType;
 
 public class Variable implements ExpressionCategory {
 
