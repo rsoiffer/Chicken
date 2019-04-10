@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import typetheory.Term.TermCategory;
 
-public class Operator implements TermCategory {
+public class Operator extends TermCategory {
 
     public final int numInputs;
     private final Function<List<Term>, String> printer;

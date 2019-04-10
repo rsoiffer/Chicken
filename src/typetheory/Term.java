@@ -9,9 +9,16 @@ import static typetheory.Main.function;
 
 public final class Term {
 
-    public static interface TermCategory {
+    public static abstract class TermCategory {
 
-        public String printTerm(Term t);
+        public abstract String printTerm(Term t);
+
+        public static abstract class AtomicTermCategory extends TermCategory {
+
+            public Term term() {
+                return new Term(this, null);
+            }
+        }
     }
 
     public final TermCategory category;
@@ -66,11 +73,11 @@ public final class Term {
     }
 
     public Term substitute(Term var, Term replaceWith) {
-        if (parts == null || parts.isEmpty()) {
-            return this;
-        }
         if (equals(var)) {
             return replaceWith;
+        }
+        if (parts == null || parts.isEmpty()) {
+            return this;
         }
         if (category == forall || category == function) {
             if (parts.get(0).equals(var)) {
